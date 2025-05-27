@@ -13,13 +13,13 @@ class WaterVariant extends StatelessWidget {
       children: [
         Icon(
           waterAmount.icon,
-          size: 72,
+          size: 128,
           color: theme.colorScheme.primary,
         ),
         const SizedBox(height: 15),
         Text(
           '${waterAmount.amount} ml',
-          style: theme.textTheme.labelLarge?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             color: theme.colorScheme.primary,
           ),
         ),

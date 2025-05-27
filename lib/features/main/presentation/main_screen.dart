@@ -353,10 +353,9 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 Center(
                   child: Container(
-                    height: size.height * 0.2,
-                    width: size.width * 0.5,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    height: size.height * 0.65,
+                    width: size.width * 0.9,
+                    margin: EdgeInsets.only(top: 20),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
@@ -380,12 +379,6 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                 ),
-                Text(
-                  '$totalAmount ml',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
-                )
               ],
             ),
           ),
