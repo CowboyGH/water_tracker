@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:water_tracker/di/di.dart';
 import 'package:water_tracker/features/main/data/models/water_amount.dart';
 import 'package:water_tracker/features/main/data/repositories/abstract_main_repository.dart';
@@ -15,11 +16,22 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   List<WaterAmount> waterAmounts = [];
   int totalAmount = 0;
+  int waterGoal = 0;
+
+  final _fieldKey = GlobalKey<FormFieldState>();
+  final TextEditingController _waterGoalController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadWaterAmounts();
+    _loadWaterGoal();
+  }
+
+  @override
+  void dispose() {
+    _waterGoalController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadWaterAmounts() async {
@@ -35,6 +47,11 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  Future<void> _loadWaterGoal() async {
+    waterGoal = di<PreferencesService>().getWaterGoal();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -48,6 +65,109 @@ class _MainScreenState extends State<MainScreen> {
               ?.copyWith(color: theme.colorScheme.onPrimary),
           textAlign: TextAlign.center,
         ),
+        actionsIconTheme: IconThemeData(
+          color: theme.colorScheme.onPrimary,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 7.5),
+            child: IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    content: SizedBox(
+                      width: size.width * 0.8,
+                      height: size.height * 0.2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Water goal',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            key: _fieldKey,
+                            controller: _waterGoalController,
+                            keyboardType: TextInputType.number,
+                            style: theme.textTheme.bodyMedium,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a valid water goal';
+                              }
+                              if (int.tryParse(value) == null) {
+                                return 'Water goal must be a number';
+                              }
+                              if (int.parse(value) < 0) {
+                                return 'Water goal must be greater than 0';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              hintText: waterGoal.toString(),
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade100,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_fieldKey.currentState!.validate()) {
+                                setState(() {
+                                  waterGoal =
+                                      int.parse(_waterGoalController.text);
+                                });
+                                di<PreferencesService>().saveWaterGoal(
+                                    int.parse(_waterGoalController.text));
+                                _waterGoalController.clear();
+                                _fieldKey.currentState!.reset();
+                                context.pop();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              minimumSize: Size(size.width * 0.5, 48),
+                            ),
+                            child: Text(
+                              'Save',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(Icons.settings),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -92,7 +212,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           Text(
-                            'Goal: 2000 ml',
+                            'Goal: $waterGoal ml',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.primary,
                             ),
@@ -106,7 +226,7 @@ class _MainScreenState extends State<MainScreen> {
                             width: 60,
                             height: 60,
                             child: CircularProgressIndicator(
-                              value: totalAmount / 2000,
+                              value: totalAmount / waterGoal,
                               color: theme.colorScheme.primary,
                               strokeWidth: 8,
                               backgroundColor:
@@ -114,7 +234,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           Text(
-                            '${((totalAmount / 2000) * 100).toInt()}%',
+                            '${((totalAmount / waterGoal) * 100).toInt()}%',
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: theme.colorScheme.primary,
                             ),
