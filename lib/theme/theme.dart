@@ -27,6 +27,21 @@ final lightTheme = ThemeData(
     labelSmall: AppShrifts.labelSmall,
   ),
   useMaterial3: true,
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: AppColors.background,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 14,
+    ),
+    hintStyle: AppShrifts.bodyMedium.copyWith(
+      color: AppColors.onSurface.withOpacity(0.6),
+    ),
+  ),
 );
 
 final darkTheme = ThemeData(
@@ -56,6 +71,21 @@ final darkTheme = ThemeData(
     labelSmall: AppShrifts.labelSmall,
   ),
   useMaterial3: true,
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: AppColors.background.withOpacity(0.1),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 14,
+    ),
+    hintStyle: AppShrifts.bodyMedium.copyWith(
+      color: AppColors.onDarkSurface.withOpacity(0.6),
+    ),
+  ),
 );
 
 class AppColors {
