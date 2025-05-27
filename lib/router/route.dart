@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:water_tracker/features/main_screen.dart';
+import 'package:water_tracker/features/main/presentation/main_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',

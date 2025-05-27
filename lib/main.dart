@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:water_tracker/di/di.dart';
 import 'package:water_tracker/router/route.dart';
+import 'package:water_tracker/services/preferences_service.dart';
 import 'package:water_tracker/theme/theme.dart';
 
-void main() {
-  runApp(const WaterTrackerApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  setupDI();
+  final prefs = di<PreferencesService>();
+  await prefs.init();
+
+  runApp(WaterTrackerApp());
 }
 
 class WaterTrackerApp extends StatelessWidget {
